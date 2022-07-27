@@ -35,9 +35,10 @@ bodyData <- data.frame(
   midarm = c(29.1, 28.2, 37, 31.1, 30.9, 23.7, 27.6, 30.6, 23.2, 24.8, 30, 28.3, 23, 28.6, 21.3,
              30.1, 25.7, 24.6, 27.1, 27.5),
   bodyfat = c(11.9, 22.8, 18.7, 20.1, 12.9, 21.7, 27.1, 25.4, 21.3, 19.3, 25.4, 27.2,
-              11.7, 17.8, 12.8, 23.9, 22.6, 25.4, 14.8, 21.1)
+              11.7, 17.8, 12.8, 23.9, 22.6, 25.4, 14.8, 21.1)) %>%
+    mutate(fatMean = mean(bodyfat))
   
-)
+
 
  
 
@@ -134,9 +135,6 @@ ui <- list(
           withMathJax(),
           h2("Concepts of R squared and Partial R squared"),
           br(),
-         
-          
-         
           box(
             title = strong("What is the R squared value ?"),
             status = "primary",
@@ -203,17 +201,17 @@ ui <- list(
                 sliderInput(
                   inputId = "b0",
                   label = "intercept (β0):",
-                  min = -80,
-                  max = 80,
+                  min = 0,
+                  max = 78,
                   value = 0
                 ),
                 br(),
                 sliderInput(
                   inputId = "b1",
                   label = "coefficient/slope (β1):",
-                  min = -0.5,
-                  max = 0.5,
-                  value = 0)
+                  min = 0.14,
+                  max = 0.32,
+                  value = 0.14)
                 
               ),
               checkboxInput(
@@ -228,7 +226,8 @@ ui <- list(
               width = 8,
               plotOutput(outputId = "sstPLOT"),
               plotOutput(outputId = "ssrPLOT"),
-              plotOutput(outputId = "ssePLOT")
+              plotOutput(outputId = "ssePLOT"),
+              plotOutput(outputId = "squarePLOT",height = "100px"),
             )
           ),
           # checkboxInput(
@@ -238,16 +237,15 @@ ui <- list(
           #   width = "100%"
           # ),
           # tableOutput(outputId = "fittedLine"),
-          plotOutput(outputId = "squarePLOT"),
-          br(),
+          # plotOutput(outputId = "rsquaredPlot"),
           br(),
           checkboxInput(
-            inputId = "fillIN",
+            inputId = "fillIN1",
             label = "check to see the value of SST and SSR",
             value = FALSE,
             width = "100%"
           ),
-          tableOutput(outputId = "fill")
+          tableOutput(outputId = "fill1")
         ),
         #### Set up an Explore Page 2----
         tabItem(
@@ -265,23 +263,33 @@ ui <- list(
                 inputId = 'fullMODEL',
                 label = 'select a full model to make M1',
                 choices = list(
-                  'Triceps + Thigh + Midarm',
-                  'Triceps + Thigh',
-                  'Triceps + Midarm',
-                  'Thigh + Midarm'
+                  'Triceps + Thigh + Midarm' = "triceps + thigh + midarm",
+                  'Triceps + Thigh' = "triceps + thigh",
+                  'Triceps + Midarm' = "triceps + midarm",
+                  'Thigh + Midarm' = "thigh + midarm"
                 ),
                 selected = 'Triceps + Thigh + Midarm'
               ),
               selectInput(
                 inputId = 'reducedMODEL',
                 label = 'select a reduced model to make M2',
-                choices = c("filler")
+                choices = c("fill2")
               ),
-              # uiOutput(outputId = "dataDescription")
-            )),
+              )
+            ),
+            column(
+              width = 8,
+              plotOutput(outputId = "partialPLOT"),
+            )
           ),
-
-        
+          checkboxInput(
+            inputId = "fillIN2",
+            label = "check to see the value of SSR of Full Model and SSR of Reduced
+            Model",
+            value = FALSE,
+            width = "100%"
+          ),
+          tableOutput(outputId = "fill3")
         ),
         #### Set up the References Page ----
         tabItem(
@@ -339,16 +347,64 @@ server <- function(input, output, session) {
   ssr <- eventReactive(
     eventExpr = plotData(),
     valueExpr = {
-      # sum((plotData()$yHat - plotData()$yMean)^2)
       sst()-sse()
     }
   )
   
+  dataCollection <- eventReactive(
+    eventExpr =  c(input$fullMODEL,input$reducedMODEL),
+    valueExpr = {
+      switch(
+        EXPR = input$selectData,
+        MEDData = MEDData,
+        PERSONData = PERSONData
+      )
+    }
+  )
   
+  
+  # sstMODEL <- eventReactive(
+  #   eventExpr = bodyData(),
+  #   valueExpr = {
+  #     sum((bodyData()$bodyfat - bodyData()$fatMean)^2)
+  #     
+  #   }
+  # )
+  # 
+  # ssrFULL <- eventReactive(
+  #   eventExpr = bodyData(),
+  #   valueExpr = {
+  #     sum((temp1 - bodyData()$fatMean)^2)
+  #     
+  #   }
+  # )
+  # 
+  # ssrREDUCED <- eventReactive(
+  #   eventExpr = bodyData(),
+  #   valueExpr = {
+  #     sum((temp2 - bodyData()$fatMean)^2)
+  #     
+  #   }
+  # )
+  
+  # sseFULL <- eventReactive(
+  #   eventExpr = bodyData(),
+  #   valueExpr = {
+  #     sum((bodyData()$bodyfat - temp1 ))
+  #   }
+  # )
+  # 
+  # sseREDUCED <- eventReactive(
+  #   eventExpr = bodyData(),
+  #   valueExpr = {
+  #     sum((bodyData()$bodyfat - temp2))
+  #   }
+  # )
+
   
   
   # below for the explore 1 page
-  ## SST plot ----
+   ## SST plot ----
   output$sstPLOT <- renderPlot(
     expr = {
       ggplot(
@@ -365,6 +421,8 @@ server <- function(input, output, session) {
           ),
           alpha = .15,fill="blue"
         )+
+        scale_x_continuous(breaks = c(200, 400, 600,800,1000,1200,1400,1600,1800,2000))+
+        scale_y_continuous(breaks = c(200,400,600,800))+
         theme_bw()+
         ggtitle("Plot of SST") +
         theme(
@@ -376,7 +434,6 @@ server <- function(input, output, session) {
   
   
   ## SSR plot----
-  
   observeEvent(
     eventExpr = plotData(),
     handlerExpr = {
@@ -394,8 +451,13 @@ server <- function(input, output, session) {
                 xmax = distance + (yHat - yMean),
                 ymin = yMean,
                 ymax = yHat),
-              alpha = .15,fill="#BC204B"
+              alpha = .15, fill = psuPalette[2],
+              color = psuPalette[2]
             )+
+            scale_x_continuous(limits = c(200, 2200),
+                               breaks = seq.int(from = 200, to = 2200, by = 200))+
+            scale_y_continuous(
+                               breaks = seq.int(from = 200, to = 600, by = 200))+
             theme_bw()+
             ggtitle("Plot of SSR") +
             theme(
@@ -429,8 +491,13 @@ server <- function(input, output, session) {
                 xmax = distance + (yHat - fare),
                 ymin = fare,
                 ymax = yHat),
-              alpha = .15,fill="#3EA39E"
+              alpha = .15, fill = psuPalette[3],
             )+
+            scale_x_continuous(
+              limits = c(200, 2200),
+              breaks = seq.int(from = 200, to = 2200, by = 200))+
+            scale_y_continuous(
+              breaks = seq.int(from = 200, to = 600, by = 200))+
             theme_bw()+
             ggtitle("Plot of SSE") +
             theme(
@@ -445,39 +512,115 @@ server <- function(input, output, session) {
     }   
   )
   
-  ## square square of SST and SSR----
+  ## barplot of R squared----
   # observeEvent(
   #   eventExpr = plotData(),
   #   handlerExpr = {
-  #     r = sqrt(ssr()/sst())
-  #     output$squarePLOT <- renderPlot(
+  #     rsquared=ssr()/sst()
+  #     output$rsquaredPlot <- renderPlot(
   #       expr = {
   #         ggplot(
   #           data = plotData(), mapping = aes(),
-  #         )+
-  #           geom_rect(
-  #             mapping = aes(
-  #               xmin = 0,
-  #               xmax = 1,
-  #               ymin = 0,
-  #               ymax = 1), alpha = .15, fill = "blue",)+
-  #           geom_rect(
-  #             mapping = aes(
-  #               xmin = 0,
-  #               xmax = r,
-  #               ymin = 0,
-  #               ymax = r
-  #             ),alpha = .15,fill="red",
-  #           )+
+  #         ) +
+  #           geom_bar(
+  #             # mapping = aes(x =  , y = ),
+  #             position = "stack",
+  #             stat = "identity",
+  #             width = 0.3
+  #           ) +
+  #           scale_fill_manual(
+  #             values = c(
+  #               "rsquared" = psuPalette[2]
+  #             )
+  #           ) +
+  #           abline(h=rsquared,col="red") +
+  #           theme_void()+
   #           theme_bw()+
-  #           ggtitle("Relationship between SST and SSR") +
-  #           theme(
-  #             text = element_text(size = 18)
-  #           )
-  #       },
+  #           coord_flip()
+  #         
+  #       })})
+  # 
+  # observeEvent(
+  #   eventExpr = plotData(),
+  #   handlerExpr = {
+  #     rsquared = ssr()/sst()
+  #     output$rsquaredPlot <- renderPlot(
+  #       expr = {
+  #         barplot(cbind(rsquared),
+  #                 main = "Rsquared Barplot",
+  #                 ylable = "Percentage",
+  #                 horiz = TRUE,
+  #                 xlim = c(0,1),
+  #                 col = c("green"),
+  #                 legend.text = c("rsquared")
+  #         )
+  #       }, 
+  #       width = 980, 
+  #       height = 450
   #     )
   #   }
   # )
+ 
+  
+  observeEvent(
+    eventExpr = plotData(),
+    handlerExpr = {
+      r = sqrt(ssr()/sst())
+      output$squarePLOT <- renderPlot(
+        expr = {
+          ggplot(
+            data = plotData(),
+            mapping = aes()
+          ) +
+            theme_void() +
+            geom_rect(
+              mapping = aes(
+                xmin = 0, 
+                xmax = 1, 
+                ymin = 0, 
+                ymax = 0.25),
+              color = "blue",
+              fill = NA
+            ) +
+            geom_rect(
+              mapping = aes(
+                xmin = 0, 
+                xmax = r, 
+                ymin = 0, 
+                ymax = 0.25),
+              fill = psuPalette[2],
+              color = psuPalette[2],
+              alpha = 0.15
+            ) +
+            geom_rect(
+              mapping = aes(
+                xmin = r, 
+                xmax = 1, 
+                ymin = 0, 
+                ymax = 0.25),
+              fill = psuPalette[3],
+              alpha = 0.15
+            ) +
+            ggtitle("BarPlot of R-sq") +
+            theme(
+              text = element_text(size = 18)
+            )+
+          # geom_rect(
+          #   mapping = aes(xmin = 0, xmax = r, ymin = r, ymax = 1),
+          #   fill = psuPalette[3],
+          #   alpha = 0.15
+          # ) +
+          annotate(
+            geom = "text",
+            x = r/2,
+            y = 0.125,
+            label = paste("R-sq =", round(r^2)),
+            size = 5
+          )
+        },
+      )
+    }
+  )
   
   
   ## regression line----
@@ -488,9 +631,9 @@ server <- function(input, output, session) {
     }})
   
   
-  ## fill in sentence ----
-  output$fill <- renderText({
-    if (input$fillIN){
+  ## fill in sentence in explore page 1 ----
+  output$fill1 <- renderText({
+    if (input$fillIN1){
       paste("According to the model, SST =",prettyNum(sst(),big.mark = ","),
             ", SSR =", prettyNum(max(0,ssr()),big.mark = ","), 
             ", and SSE =", prettyNum(sse(),big.mark = ","), ". Can you notice 
@@ -502,38 +645,129 @@ server <- function(input, output, session) {
   # below for the explore 2 page
   ## update the model selection ----
   observeEvent(input$fullMODEL, {
-  if (input$fullMODEL == "Triceps + Thigh + Midarm") {
+  if (input$fullMODEL == "triceps + thigh + midarm") {
     updateSelectInput(
       session = session,
       inputId = "reducedMODEL",
-      choices = list('Triceps + Thigh', 'Triceps + Midarm', 'Thigh + Midarm', 'Triceps',
-                     'Thigh', 'Midarm' )
+      choices = list('Triceps + Thigh' = "triceps + thigh", 
+                     'Triceps + Midarm' = "triceps + midarm", 
+                     'Thigh + Midarm' = "thigh + midarm", 
+                     'Triceps' = "tricpes",
+                     'Thigh' = "thigh", 'Midarm' = "midarm" )
     )
-  } else if (input$fullMODEL == "Triceps + Thigh") {
+  } else if (input$fullMODEL == "triceps + thigh") {
     updateSelectInput(
       session = session,
       inputId = "reducedMODEL",
-      choices = list('Triceps','Thigh')
+      choices = list('Triceps' = "triceps",
+                     'Thigh' = "thigh")
     )
-  } else if (input$fullMODEL == "Triceps + Midarm") {
+  } else if (input$fullMODEL == "triceps + midarm") {
     updateSelectInput(
       session = session,
       inputId = "reducedMODEL",
-      choices = list('Triceps', 'Midarm')
+      choices = list('Triceps' = "triceps",
+                     'Midarm' = "midarm")
     )
-  } else if (input$fullMODEL == "Thigh + Midarm") {
+  } else if (input$fullMODEL == "thigh + midarm") {
     updateSelectInput(
       session = session,
       inputId = "reducedMODEL",
-      choices = list('Thigh', 'Midarm')
+      choices = list('Thigh' = "thigh", 
+                     'Midarm' = "midarm")
     )
   }
   })
   
-  
-  
-  
-  
+  observeEvent(
+    eventExpr = input$fullMODEL,
+    handlerExpr = {
+      print(input$fullMODEL)
+      temp1 <- lm(
+        formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
+        data = bodyData)
+      print(summary(temp1))
+    }
+  )
+
+  observeEvent(
+    eventExpr = input$reducedMODEL,
+    handlerExpr = {
+      print(input$reducedMODEL)
+      temp2 <- lm(
+        formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
+        data = bodyData)
+      print(summary(temp2))
+    },
+    ignoreInit = TRUE
+  )
+
+  ##plot in partial R squared part----
+  observeEvent(
+    eventExpr = c(input$fullMODEL,input$reducedMODEL),
+    handlerExpr = {
+      temp1 <- lm(
+        formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
+        data = bodyData)
+      temp2 <- lm(
+        formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
+        data = bodyData)
+      rSq1 <- summary(temp1)$R.Squared # rsq1 of the full model
+      rSq2 <- summary(temp2)$R.Squared # rsq2 of the reduced model
+      output$partialPLOT <- renderPlot(
+        expr = {
+          ggplot(
+            data = bodyData(),
+            mapping = aes()
+          ) +
+            geom_rect(
+              mapping = aes(
+                xmin = 0, 
+                xmax = 1, 
+                ymin = 0, 
+                ymax = 1),
+              color = "blue",
+              fill = NA
+            ) +
+            geom_rect(
+              mapping = aes(
+                xmin = 0, 
+                xmax = sqrt(rSq2), 
+                ymin = 0, 
+                ymax = sqrt(rSq2)),
+              fill = psuPalette[2],
+              color = psuPalette[2],
+              alpha = 0.15
+            ) +
+            geom_rect(
+              mapping = aes(
+                xmin = sqrt(rSq2), 
+                xmax = sqrt(rSq1), 
+                ymin = 0, 
+                ymax = sqrt(rSq1)),
+              fill = psuPalette[3],
+              alpha = 0.15
+            ) +
+            geom_rect(
+              mapping = aes(
+                xmin = 0, 
+                xmax = sqrt(rSq1), 
+                ymin = sqrt(rSq2), 
+                ymax = sqrt(rSq1)),
+              fill = psuPalette[3],
+              alpha = 0.15
+            ) +
+            ggtitle("plot of partial R squared") +
+            theme(
+              text = element_text(size = 18)
+            )
+        },
+      )
+    },
+    ignoreInit = TRUE
+  )
+
+  ##fill in sentence in explore page 2----
   
   ## Set Go Button ----
   observeEvent(
