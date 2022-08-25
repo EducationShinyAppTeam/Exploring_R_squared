@@ -1,15 +1,11 @@
 # Load Packages ----
+library(shiny)
+library(shinydashboard)
+library(shinyBS)
+library(shinyWidgets)
 library(boastUtils)
 library(ggplot2)
-library(plotly)
 library(dplyr)
-library(shinycssloaders)
-library(Stat2Data)
-library(ResourceSelection)
-library(data.table)
-library(shinyBS)
-library(shinyjs)
-library(withr)
 
 # Load data----
 
@@ -230,14 +226,6 @@ ui <- list(
               plotOutput(outputId = "squarePLOT",height = "100px"),
             )
           ),
-          # checkboxInput(
-          #   inputId = "fittedRegression",
-          #   label = "Show the fitted regression line",
-          #   value = FALSE,
-          #   width = "100%"
-          # ),
-          # tableOutput(outputId = "fittedLine"),
-          # plotOutput(outputId = "rsquaredPlot"),
           br(),
           checkboxInput(
             inputId = "fillIN1",
@@ -259,9 +247,13 @@ ui <- list(
             column(
               width = 4,
               wellPanel(
+                h3("Data Info"),
+                p("This data contains 20 observations of bodyfat and related information
+                  about triceps, thigh and midarm."),
+                br(),
               selectInput(
                 inputId = 'fullMODEL',
-                label = 'select a full model to make M1',
+                label = 'Select a full model',
                 choices = list(
                   'Triceps + Thigh + Midarm' = "triceps + thigh + midarm",
                   'Triceps + Thigh' = "triceps + thigh",
@@ -272,37 +264,105 @@ ui <- list(
               ),
               selectInput(
                 inputId = 'reducedMODEL',
-                label = 'select a reduced model to make M2',
+                label = 'Select a reduced model',
                 choices = c("fill2")
+              ),
+              bsButton(
+                inputId = "newSAMPLE", 
+                label = "Simulate!", 
+                icon = icon("retweet"),
+                size = "large",
+                style = "default"
               ),
               )
             ),
             column(
               width = 8,
+              h3("Illustraton:"),
+              tags$ul(tags$li("The plot below will show the relationship between 
+                              full model and reduced model."),
+                      tags$li("The red part represents the proportion of variation 
+                              explained by the reduced model."),
+                      tags$li("The green part shows the proportion of variation 
+                              that cannot be explained by the reduced model, but 
+                              can be explained by the full model (Partial R Squared). "),
+                      tags$li("The combination of red part and green part represents
+                              the proportion of variation explained by the full
+                              model.")
+               
+              ),
               plotOutput(outputId = "partialPLOT"),
-            )
+              tableOutput(outputId = "fill3"),
+            ),
+            # checkboxInput(
+            #   inputId = "fillIN2",
+            #   label = "check to see the R squared value of two models",
+            #   value = FALSE,
+            #   width = "100%"
+            # ),
+            # tableOutput(outputId = "fill3")
+            
           ),
-          checkboxInput(
-            inputId = "fillIN2",
-            label = "check to see the value of SSR of Full Model and SSR of Reduced
-            Model",
-            value = FALSE,
-            width = "100%"
-          ),
-          tableOutput(outputId = "fill3")
+          # checkboxInput(
+          #   inputId = "fillIN2",
+          #   label = "check to see the value of SSR of Full Model and SSR of Reduced
+          #   Model",
+          #   value = FALSE,
+          #   width = "100%"
+          # ),
+          # tableOutput(outputId = "fill3")
         ),
         #### Set up the References Page ----
         tabItem(
           tabName = "references",
           withMathJax(),
-          h2("References"),
-          p("You'll need to fill in this page with all of the appropriate
-            references for your app."),
           p(
             class = "hangingindent",
-            "Bailey, E. (2015). shinyBS: Twitter bootstrap components for shiny.
-            (v0.61). [R package]. Available from
+            "Bailey, E. (2022). shinyBS: Twitter bootstrap components for shiny.
+            (v 0.61.1). [R package]. Available from
             https://CRAN.R-project.org/package=shinyBS"
+          ),
+          p(
+            class = "hangingindent",
+            "Carey, R. and Hatfield, N. J. (2022). boastUtils: BOAST utlities.
+            (v 0.1.12.3). [R package]. Available from
+            https://github.com/EducationShinyAppTeam/boastUtils"
+          ),
+          p(
+            class = "hangingindent",
+            "Change, W., and Borges Ribeiro, B. (2021). shinydashboard: Create
+            dashboards with 'shiny'. (v 0.7.2) [R package]. Available from
+            https://CRAN.R-project.org/package=shinydashboard"
+          ),
+          p(
+            class = "hangingindent",
+            "Chang, W., Cheng J., Allaire, J., Sievert, C., Schloerke, B., Xie, Y.,
+            Allen, J., McPherson, J., Dipert, A., and Borges, B. (2021). shiny:
+            Web application framework for R. (v 1.7.1). [R package]. Available
+            from https://CRAN.R-project.org/package=shiny"
+          ),
+          p(
+            class = "hangingindent",
+            "Pennsylvania State University. (2018). STAT 462 Applied Regression Analysis. 
+            Available from https://online.stat.psu.edu/stat462/"
+          ),
+          p(
+            class = "hangingindent",
+            "Perrier, V., Meyer, F., and Granjon, D. (2022). shinyWidgets: Custom
+            inputs widgets for shiny. (v 0.7.0). [R package]. Available from
+            https://CRAN.R-project.org/package=shinyWidgets"
+          ),
+          p(
+            class = "hangingindent",
+            "Wickham, H. (2016). ggplot2: Elegant graphics for data analysis.
+            Springer-Verlag:New York. (v 3.3.6) [R package]. Available from
+            https://ggplot2.tidyverse.org"
+          ),
+          p(
+            class = "hangingindent",
+            "Wickham, H., François, R., Henry, L., Müller, K. (2021). dplyr: A 
+            Grammar of Data Manipulation. R package version 1.0.6. Available from
+            https://CRAN.R-project.org/package=dplyr"
           ),
           br(),
           br(),
@@ -410,16 +470,17 @@ server <- function(input, output, session) {
       ggplot(
         data = plotData(),
         mapping = aes(x=distance, y=fare))+
-        geom_point()+
+        geom_point(na.rm = TRUE)+
         geom_hline(aes(yintercept = mean(fare)), color="blue")+
         geom_rect(
           mapping = aes(
             ymin = fare,
             ymax = yMean,
             xmin = distance,
-            xmax = abs(fare-yMean) + distance
+            xmax = abs(fare-yMean) + distance,
           ),
-          alpha = .15,fill="blue"
+          alpha = .15,fill="blue",
+          na.rm = FALSE
         )+
         scale_x_continuous(breaks = c(200, 400, 600,800,1000,1200,1400,1600,1800,2000))+
         scale_y_continuous(breaks = c(200,400,600,800))+
@@ -442,7 +503,7 @@ server <- function(input, output, session) {
           ggplot(
             data = plotData(),
             mapping = aes(x = distance, y = fare))+
-            geom_point()+
+            geom_point(na.rm = TRUE)+
             geom_abline(intercept = input$b0,slope = input$b1)+
             geom_hline(aes(yintercept = mean(fare)), color = "blue")+
             geom_rect(
@@ -451,7 +512,9 @@ server <- function(input, output, session) {
                 xmax = distance + (yHat - yMean),
                 ymin = yMean,
                 ymax = yHat),
-              alpha = .15, fill = psuPalette[2],
+              na.rm = FALSE,
+              alpha = .15,
+              fill = psuPalette[2],
               color = psuPalette[2]
             )+
             scale_x_continuous(limits = c(200, 2200),
@@ -482,7 +545,7 @@ server <- function(input, output, session) {
           ggplot(
             data = plotData(),
             mapping = aes(x = distance, y = fare))+
-            geom_point()+
+            geom_point(na.rm = TRUE)+
             geom_abline(intercept = input$b0,slope = input$b1)+
             geom_hline(aes(yintercept = mean(fare)), color = "blue")+
             geom_rect(
@@ -491,7 +554,9 @@ server <- function(input, output, session) {
                 xmax = distance + (yHat - fare),
                 ymin = fare,
                 ymax = yHat),
-              alpha = .15, fill = psuPalette[3],
+              na.rm = FALSE,
+              alpha = .15, 
+              fill = psuPalette[3],
             )+
             scale_x_continuous(
               limits = c(200, 2200),
@@ -513,55 +578,6 @@ server <- function(input, output, session) {
   )
   
   ## barplot of R squared----
-  # observeEvent(
-  #   eventExpr = plotData(),
-  #   handlerExpr = {
-  #     rsquared=ssr()/sst()
-  #     output$rsquaredPlot <- renderPlot(
-  #       expr = {
-  #         ggplot(
-  #           data = plotData(), mapping = aes(),
-  #         ) +
-  #           geom_bar(
-  #             # mapping = aes(x =  , y = ),
-  #             position = "stack",
-  #             stat = "identity",
-  #             width = 0.3
-  #           ) +
-  #           scale_fill_manual(
-  #             values = c(
-  #               "rsquared" = psuPalette[2]
-  #             )
-  #           ) +
-  #           abline(h=rsquared,col="red") +
-  #           theme_void()+
-  #           theme_bw()+
-  #           coord_flip()
-  #         
-  #       })})
-  # 
-  # observeEvent(
-  #   eventExpr = plotData(),
-  #   handlerExpr = {
-  #     rsquared = ssr()/sst()
-  #     output$rsquaredPlot <- renderPlot(
-  #       expr = {
-  #         barplot(cbind(rsquared),
-  #                 main = "Rsquared Barplot",
-  #                 ylable = "Percentage",
-  #                 horiz = TRUE,
-  #                 xlim = c(0,1),
-  #                 col = c("green"),
-  #                 legend.text = c("rsquared")
-  #         )
-  #       }, 
-  #       width = 980, 
-  #       height = 450
-  #     )
-  #   }
-  # )
- 
-  
   observeEvent(
     eventExpr = plotData(),
     handlerExpr = {
@@ -579,6 +595,7 @@ server <- function(input, output, session) {
                 xmax = 1, 
                 ymin = 0, 
                 ymax = 0.25),
+              na.rm = FALSE,
               color = "blue",
               fill = NA
             ) +
@@ -588,6 +605,7 @@ server <- function(input, output, session) {
                 xmax = r, 
                 ymin = 0, 
                 ymax = 0.25),
+              na.rm = FALSE,
               fill = psuPalette[2],
               color = psuPalette[2],
               alpha = 0.15
@@ -598,6 +616,7 @@ server <- function(input, output, session) {
                 xmax = 1, 
                 ymin = 0, 
                 ymax = 0.25),
+              na.rm = FALSE,
               fill = psuPalette[3],
               alpha = 0.15
             ) +
@@ -614,7 +633,7 @@ server <- function(input, output, session) {
             geom = "text",
             x = r/2,
             y = 0.125,
-            label = paste("R-sq =", round(r^2)),
+            label = paste("R-sq =", round(r^2, digits = 3)),
             size = 5
           )
         },
@@ -652,7 +671,7 @@ server <- function(input, output, session) {
       choices = list('Triceps + Thigh' = "triceps + thigh", 
                      'Triceps + Midarm' = "triceps + midarm", 
                      'Thigh + Midarm' = "thigh + midarm", 
-                     'Triceps' = "tricpes",
+                     'Triceps' = "triceps",
                      'Thigh' = "thigh", 'Midarm' = "midarm" )
     )
   } else if (input$fullMODEL == "triceps + thigh") {
@@ -679,32 +698,32 @@ server <- function(input, output, session) {
   }
   })
   
-  observeEvent(
-    eventExpr = input$fullMODEL,
-    handlerExpr = {
-      print(input$fullMODEL)
-      temp1 <- lm(
-        formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
-        data = bodyData)
-      print(summary(temp1))
-    }
-  )
-
-  observeEvent(
-    eventExpr = input$reducedMODEL,
-    handlerExpr = {
-      print(input$reducedMODEL)
-      temp2 <- lm(
-        formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
-        data = bodyData)
-      print(summary(temp2))
-    },
-    ignoreInit = TRUE
-  )
+  # observeEvent(
+  #   eventExpr = input$fullMODEL,
+  #   handlerExpr = {
+  #     print(input$fullMODEL)
+  #     temp1 <- lm(
+  #       formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
+  #       data = bodyData)
+  #     print(summary(temp1))
+  #   }
+  # )
+  # 
+  # observeEvent(
+  #   eventExpr = input$reducedMODEL,
+  #   handlerExpr = {
+  #     print(input$reducedMODEL)
+  #     temp2 <- lm(
+  #       formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
+  #       data = bodyData)
+  #     print(summary(temp2))
+  #   },
+  #   ignoreInit = TRUE
+  # )
 
   ##plot in partial R squared part----
   observeEvent(
-    eventExpr = c(input$fullMODEL,input$reducedMODEL),
+    eventExpr = input$newSAMPLE,
     handlerExpr = {
       temp1 <- lm(
         formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
@@ -712,62 +731,102 @@ server <- function(input, output, session) {
       temp2 <- lm(
         formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
         data = bodyData)
-      rSq1 <- summary(temp1)$R.Squared # rsq1 of the full model
-      rSq2 <- summary(temp2)$R.Squared # rsq2 of the reduced model
+      r1 <- summary(temp1)$r.squared # rsq1 of the full model
+      r2 <- summary(temp2)$r.squared # rsq2 of the reduced model
       output$partialPLOT <- renderPlot(
         expr = {
+          validate(
+            need(
+              expr = !is.null(input$newSAMPLE), 
+              message = "click on the New Sample button to see the plot "
+            )
+          )
           ggplot(
-            data = bodyData(),
+            data = bodyData,
             mapping = aes()
           ) +
+            coord_fixed()+
             geom_rect(
               mapping = aes(
-                xmin = 0, 
-                xmax = 1, 
-                ymin = 0, 
-                ymax = 1),
-              color = "blue",
-              fill = NA
-            ) +
-            geom_rect(
-              mapping = aes(
-                xmin = 0, 
-                xmax = sqrt(rSq2), 
-                ymin = 0, 
-                ymax = sqrt(rSq2)),
+                xmin = 0,
+                xmax = sqrt(r2),
+                ymin = 0,
+                ymax = sqrt(r2)),
+              na.rm = FALSE,
               fill = psuPalette[2],
               color = psuPalette[2],
               alpha = 0.15
             ) +
             geom_rect(
               mapping = aes(
-                xmin = sqrt(rSq2), 
-                xmax = sqrt(rSq1), 
-                ymin = 0, 
-                ymax = sqrt(rSq1)),
+                xmin = sqrt(r2),
+                xmax = sqrt(r1),
+                ymin = 0,
+                ymax = sqrt(r1)),
+              na.rm = FALSE,
               fill = psuPalette[3],
               alpha = 0.15
             ) +
             geom_rect(
               mapping = aes(
-                xmin = 0, 
-                xmax = sqrt(rSq1), 
-                ymin = sqrt(rSq2), 
-                ymax = sqrt(rSq1)),
+                xmin = 0,
+                xmax = sqrt(r1),
+                ymin = sqrt(r2),
+                ymax = sqrt(r1)),
+              na.rm = FALSE,
               fill = psuPalette[3],
               alpha = 0.15
             ) +
+            geom_rect(
+              mapping = aes(
+                xmin = 0,
+                xmax = 1,
+                ymin = 0,
+                ymax = 1),
+              na.rm = FALSE,
+              color = "blue",
+              fill = NA
+            ) +
             ggtitle("plot of partial R squared") +
+            theme_void() +
             theme(
-              text = element_text(size = 18)
-            )
+              text = element_text(size = 18),
+              legend.position = "bottom"
+            ) 
         },
+        alt = "FILL IN"
       )
     },
-    ignoreInit = TRUE
+    ignoreNULL = TRUE,
+    ignoreInit = FALSE
   )
 
   ##fill in sentence in explore page 2----
+  
+  observeEvent(
+    eventExpr = input$newSAMPLE,
+    handlerExpr = {
+      temp1 <- lm(
+        formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
+        data = bodyData)
+      temp2 <- lm(
+        formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
+        data = bodyData)
+      r1 <- summary(temp1)$r.squared # rsq1 of the full model
+      r2 <- summary(temp2)$r.squared # rsq2 of the reduced model
+      output$fill3 <- renderText({
+        if (input$newSAMPLE){
+          paste("R squared value of reduced model =",
+                round(r2, digits = 3),
+                ", R squared value of full model =",  round(r1, digits = 3), 
+                "." )
+        }})
+    },
+    ignoreNULL = TRUE,
+    ignoreInit = FALSE
+  )
+  
+
   
   ## Set Go Button ----
   observeEvent(
