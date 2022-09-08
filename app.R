@@ -10,13 +10,17 @@ library(dplyr)
 # Load data----
 
 
+  # xPoint <- c(0, 1)
+  # yPoint <- c(0, 1)
+  # df <- data.frame( xPoint, yPoint)
+
 
 
 baseData <- data.frame(
-  Fare= c(54, 84, 90, 93, 111, 141, 162, 183, 207, 231, 291, 300, 309, 360, 360, 429, 477),
-  Distance= c(90, 179, 184, 190, 270, 393, 502, 578, 681, 818, 1102, 1138, 1204, 1448, 1463, 1813, 1828)
+  fare= c(54, 84, 90, 93, 111, 141, 162, 183, 207, 231, 291, 300, 309, 360, 360, 429, 477),
+  distance= c(90, 179, 184, 190, 270, 393, 502, 578, 681, 818, 1102, 1138, 1204, 1448, 1463, 1813, 1828)
   ) %>%
-  mutate(yMean = mean(Fare))
+  mutate(yMean = mean(fare))
 
 
 bodyData <- data.frame(
@@ -44,12 +48,12 @@ ui <- list(
     skin = "black",
     ### Create the app header ----
     dashboardHeader(
-      title = "Exploring R-Squared", # You may use a shortened form of the title here
+      title = "Exploring R Squared", # You may use a shortened form of the title here
       titleWidth = 250,
       tags$li(class = "dropdown", actionLink("info", icon("info"))),
       tags$li(
         class = "dropdown",
-        boastUtils::surveyLink(name = "Exploring R-Squared")
+        boastUtils::surveyLink(name = "Exploring R Squared")
       ),
       tags$li(
         class = "dropdown",
@@ -65,8 +69,8 @@ ui <- list(
         id = "pages",
         menuItem("Overview", tabName = "overview", icon = icon("tachometer-alt")),
         menuItem("Prerequisites", tabName = "prerequisites", icon = icon("book")),
-        menuItem("Explore R-Squared", tabName = "Explore1", icon = icon("wpexplorer")),
-        menuItem("Explore partial R-Squared", tabName = "Explore2", icon = icon("wpexplorer")),
+        menuItem("Explore R Squared", tabName = "Explore1", icon = icon("wpexplorer")),
+        menuItem("Explore partial R Squared", tabName = "Explore2", icon = icon("wpexplorer")),
         menuItem("References", tabName = "references", icon = icon("leanpub"))
       ),
       tags$div(
@@ -81,15 +85,15 @@ ui <- list(
         tabItem(
           tabName = "overview",
           withMathJax(),
-          h1("Exploring R-Squared"), # This should be the full name.
-          p("R-Squared is a statistical measure of how close the data are to the
+          h1("Exploring R Squared"), # This should be the full name.
+          p("R squared is a statistical measure of how close the data are to the
             fitted regression line. This app allows you to explore it in simple 
-            linear regression model and mulitvariant model."),
+            linear regression model and multvariant model."),
           h2("Instructions"),
           br(),
           tags$ol(
             tags$li("Click on the prerequisites button to review/learn the concepts
-                    of R-Squared value and partial R-Squared value."),
+                    of R squared value and partial R squared value."),
             tags$li("click the go button to enter the prerequisite page.")
             
           ),
@@ -125,17 +129,17 @@ ui <- list(
         tabItem(
           tabName = "prerequisites",
           withMathJax(),
-          h2("Concepts of R-Squared and Partial R-Squared"),
+          h2("Concepts of R squared and Partial R squared"),
           br(),
           box(
-            title = strong("What is the R-Squared value ?"),
+            title = strong("What is the R squared value ?"),
             status = "primary",
             collapsible = TRUE,
             collapsed = TRUE,
             width = '100%',
-            "R-Squared value, denoted as \\(r^2\\), is the regression sum of squares
+            "R squared value, denoted as \\(r^2\\), is the regression sum of squares
             divided by the total sum of squares. \\(r^2\\) = SSR/SST = 1 - SSE/SST. 
-            Because R-Squared value is a proportion, it should between 0 and 1.
+            Because R squared value is a proportion, it should between 0 and 1.
             If the value is equal to 1, it means that the model explains 
             all the variability of the response data around the mean. If 
             the value is equal to 0, it means that the model explains
@@ -143,7 +147,7 @@ ui <- list(
             
           ),
           box(
-            title = strong("how to intepret R-Squared value ?"),
+            title = strong("how to intepret R squared value ?"),
             status = "primary",
             collapsible = TRUE,
             collapsed = TRUE,
@@ -157,16 +161,16 @@ ui <- list(
             )
           ),
           box(
-            title = strong("What is the partial R-Squared ? How to inteprete it?"),
+            title = strong("What is the partial R squared ? How to inteprete it?"),
             status = "primary",
             collapsible = TRUE,
             collapsed = TRUE,
             width = '100%',
-            "partial R-Squared value also called the coefficient of partial determination.
+            "partial R squared value also called the coefficient of partial determination.
             In regression model, assuming that a full model will include all three
-            predictors (Y ~ X1, X2 X3), partial R-Squared helps to explain what
+            predictors (Y ~ X1, X2 X3), partial R squared helps to explain what
             additional percent of variation can be explained by X2 and X3, given 
-            the reduced model only include X1. In general, partial R-Squared gives 
+            the reduced model only include X1. In general, partial R squared gives 
             us the proportion of variation explained by X2 and X3 that cannot be 
             explained by X1."
           )
@@ -176,17 +180,17 @@ ui <- list(
         #### Set up an Explore Page 1----
         tabItem(
           tabName = "Explore1",
-          h2("R-Squared"),
+          h2("R squared"),
           tags$ul(tags$li("Adjust the sliders to change the intercept (β0) and 
                               coefficient (β1)."),
-                  tags$li("Exploring R-Squared by AirFare and Distance data.")),
+                  tags$li("Exploring R squared by Flightfair and Distance data.")),
           br(),
           fluidRow(
             column(
               width = 4,
               wellPanel(
                 h3("Data Info"),
-                p("This data contains 17 observations of airFare and related
+                p("This data contains 17 observations of flightfare and related
                       flight distance. Using the slider to adjust intercept and 
                       coefficient to see the changes."),
                 br(),
@@ -234,10 +238,10 @@ ui <- list(
         #### Set up an Explore Page 2----
         tabItem(
           tabName = "Explore2",
-          h2("Partial R-Squared"),
+          h2("Partial R squared"),
           tags$ul(tags$li("Use the dropdown menu to select the full model and the
                           reduced model."),
-                  tags$li("Exploring Partial R-Squared by Bodyfat data.")),
+                  tags$li("Exploring Partial R squared by Bodyfat data.")),
           br(),
           fluidRow(
             column(
@@ -276,17 +280,15 @@ ui <- list(
               width = 8,
               h3("Illustraton:"),
               tags$ul(tags$li("The plot below will show the relationship between 
-                              the full model and the reduced model."),
-                      tags$li("The red square represents the proportion of variation 
-                              explained by the reduced model. The area can be denoted
-                              as R-Squared value of the reduced model."),
-                      tags$li("The green square represents the proportion of variation 
-                               explained by the full model. The area of green squared
-                              can be denoted as R-Squared value of the full model."),
-                      tags$li("The gap between two squares represents the 
-                              variation cannot be explained by the reduced model but can be
-                              explained by the full model. The area of gap can be
-                              denoted as Partial R-Squared.")
+                              full model and reduced model."),
+                      tags$li("The red part represents the proportion of variation 
+                              explained by the reduced model."),
+                      tags$li("The green part shows the proportion of variation 
+                              that cannot be explained by the reduced model, but 
+                              can be explained by the full model (Partial R Squared). "),
+                      tags$li("The combination of red part and green part represents
+                              the proportion of variation explained by the full
+                              model.")
                
               ),
               plotOutput(outputId = "partialPLOT"),
@@ -294,7 +296,7 @@ ui <- list(
             ),
             # checkboxInput(
             #   inputId = "fillIN2",
-            #   label = "check to see the R-Squared value of two models",
+            #   label = "check to see the R squared value of two models",
             #   value = FALSE,
             #   width = "100%"
             # ),
@@ -405,7 +407,6 @@ server <- function(input, output, session) {
   ssr <- eventReactive(
     eventExpr = plotData(),
     valueExpr = {
-      # sum((plotData()$yHat - plotData()$yMean)^2)
       sst()-sse()
     }
   )
@@ -468,28 +469,21 @@ server <- function(input, output, session) {
     expr = {
       ggplot(
         data = plotData(),
-        mapping = aes(x=Distance, y=Fare))+
+        mapping = aes(x=distance, y=fare))+
         geom_point(na.rm = TRUE)+
-        geom_hline(aes(yintercept = mean(Fare)), color="blue")+
+        geom_hline(aes(yintercept = mean(fare)), color="blue")+
         geom_rect(
           mapping = aes(
-            ymin = Fare,
+            ymin = fare,
             ymax = yMean,
-            xmin = Distance,
-            xmax = abs(Fare-yMean) + Distance,
+            xmin = distance,
+            xmax = abs(fare-yMean) + distance,
           ),
-          alpha = .15,
-          fill= psuPalette[4],
-          col = psuPalette[4],
+          alpha = .15,fill="blue",
           na.rm = FALSE
         )+
-        scale_x_continuous(
-          limits = c(0, 2200),
-          breaks = seq.int(from = 0, to = 2200, by = 200)
-        )+
-        scale_y_continuous(
-          breaks = seq.int(from = 0, to = 600, by = 200)
-        )+
+        scale_x_continuous(breaks = c(200, 400, 600,800,1000,1200,1400,1600,1800,2000))+
+        scale_y_continuous(breaks = c(200,400,600,800))+
         theme_bw()+
         ggtitle("Plot of SST") +
         theme(
@@ -508,28 +502,25 @@ server <- function(input, output, session) {
         expr = {
           ggplot(
             data = plotData(),
-            mapping = aes(x = Distance, y = Fare))+
+            mapping = aes(x = distance, y = fare))+
             geom_point(na.rm = TRUE)+
             geom_abline(intercept = input$b0,slope = input$b1)+
-            geom_hline(aes(yintercept = mean(Fare)), color = "blue")+
+            geom_hline(aes(yintercept = mean(fare)), color = "blue")+
             geom_rect(
               mapping = aes(
-                xmin = Distance,
-                xmax = Distance + abs(yHat - yMean),
+                xmin = distance,
+                xmax = distance + (yHat - yMean),
                 ymin = yMean,
                 ymax = yHat),
               na.rm = FALSE,
-              alpha = .2,
+              alpha = .15,
               fill = psuPalette[2],
-              col = psuPalette[2],
+              color = psuPalette[2]
             )+
-            scale_x_continuous(
-              limits = c(0, 2200),
-              breaks = seq.int(from = 0, to = 2200, by = 200)
-            )+
+            scale_x_continuous(limits = c(200, 2200),
+                               breaks = seq.int(from = 200, to = 2200, by = 200))+
             scale_y_continuous(
-              breaks = seq.int(from = 0, to = 600, by = 200)
-            )+
+                               breaks = seq.int(from = 200, to = 600, by = 200))+
             theme_bw()+
             ggtitle("Plot of SSR") +
             theme(
@@ -553,26 +544,25 @@ server <- function(input, output, session) {
         expr = {
           ggplot(
             data = plotData(),
-            mapping = aes(x = Distance, y = Fare))+
+            mapping = aes(x = distance, y = fare))+
             geom_point(na.rm = TRUE)+
             geom_abline(intercept = input$b0,slope = input$b1)+
-            geom_hline(aes(yintercept = mean(Fare)), color = "blue")+
+            geom_hline(aes(yintercept = mean(fare)), color = "blue")+
             geom_rect(
               mapping = aes(
-                xmin = Distance,
-                xmax = Distance + (yHat - Fare),
-                ymin = Fare,
+                xmin = distance,
+                xmax = distance + (yHat - fare),
+                ymin = fare,
                 ymax = yHat),
               na.rm = FALSE,
-              alpha = .25, 
+              alpha = .15, 
               fill = psuPalette[3],
-              col = psuPalette[3],
             )+
             scale_x_continuous(
-              limits = c(0, 2200),
-              breaks = seq.int(from = 0, to = 2200, by = 200))+
+              limits = c(200, 2200),
+              breaks = seq.int(from = 200, to = 2200, by = 200))+
             scale_y_continuous(
-              breaks = seq.int(from = 0, to = 600, by = 200))+
+              breaks = seq.int(from = 200, to = 600, by = 200))+
             theme_bw()+
             ggtitle("Plot of SSE") +
             theme(
@@ -587,7 +577,7 @@ server <- function(input, output, session) {
     }   
   )
   
-  ## barplot of R-Squared----
+  ## barplot of R squared----
   observeEvent(
     eventExpr = plotData(),
     handlerExpr = {
@@ -630,7 +620,7 @@ server <- function(input, output, session) {
               fill = psuPalette[3],
               alpha = 0.15
             ) +
-            ggtitle("Bar plot of R-sq") +
+            ggtitle("BarPlot of R-sq") +
             theme(
               text = element_text(size = 18)
             )+
@@ -642,13 +632,10 @@ server <- function(input, output, session) {
           annotate(
             geom = "text",
             x = r/2,
-            y = -0.05,
+            y = 0.125,
             label = paste("R-sq =", round(r^2, digits = 3)),
-            size = 8
-          ) + 
-            scale_y_continuous(
-              expand = expansion(mult = 0, add = c(0.15, 0))
-            )
+            size = 5
+          )
         },
       )
     }
@@ -734,7 +721,7 @@ server <- function(input, output, session) {
   #   ignoreInit = TRUE
   # )
 
-  ##plot in partial R-Squared part----
+  ##plot in partial R squared part----
   observeEvent(
     eventExpr = input$newSAMPLE,
     handlerExpr = {
@@ -766,7 +753,7 @@ server <- function(input, output, session) {
                 ymin = 0,
                 ymax = sqrt(r2)),
               na.rm = FALSE,
-              fill =  psuPalette[2],
+              fill = psuPalette[2],
               color = psuPalette[2],
               alpha = 0.15
             ) +
@@ -787,7 +774,7 @@ server <- function(input, output, session) {
                 ymin = sqrt(r2),
                 ymax = sqrt(r1)),
               na.rm = FALSE,
-              fill =  psuPalette[3],
+              fill = psuPalette[3],
               alpha = 0.15
             ) +
             geom_rect(
@@ -800,26 +787,11 @@ server <- function(input, output, session) {
               color = "blue",
               fill = NA
             ) +
-            ggtitle("plot of partial R-Squared") +
-            # scale_fill_manual(
-            #   name = "Model",
-            #   labels = c(
-            #     "Reduced Model" = "Reduced Model",
-            #     "Full Model" = "Full Model"
-            #   ),
-            #   values = c(
-            #     "Reduced Model" = "psuPalette[2]",
-            #     "Full Model" = "psuPalette[3]"
-            #   )
-            # )+
-            # scale_fill_manual(
-            #   labels=c("Reduced Model", "Full Model"),
-            #   values  = psuPalette[2:3],
-            #   name = "Model") +
+            ggtitle("plot of partial R squared") +
             theme_void() +
             theme(
               text = element_text(size = 18),
-              legend.position = "right"
+              legend.position = "bottom"
             ) 
         },
         alt = "FILL IN"
@@ -844,9 +816,9 @@ server <- function(input, output, session) {
       r2 <- summary(temp2)$r.squared # rsq2 of the reduced model
       output$fill3 <- renderText({
         if (input$newSAMPLE){
-          paste("R-Squared value of reduced model =",
+          paste("R squared value of reduced model =",
                 round(r2, digits = 3),
-                ", R-Squared value of full model =",  round(r1, digits = 3), 
+                ", R squared value of full model =",  round(r1, digits = 3), 
                 "." )
         }})
     },
