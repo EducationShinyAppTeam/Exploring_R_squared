@@ -8,19 +8,11 @@ library(ggplot2)
 library(dplyr)
 
 # Load data----
-
-
-  # xPoint <- c(0, 1)
-  # yPoint <- c(0, 1)
-  # df <- data.frame( xPoint, yPoint)
-
-
-
 baseData <- data.frame(
-  fare= c(54, 84, 90, 93, 111, 141, 162, 183, 207, 231, 291, 300, 309, 360, 360, 429, 477),
-  distance= c(90, 179, 184, 190, 270, 393, 502, 578, 681, 818, 1102, 1138, 1204, 1448, 1463, 1813, 1828)
-  ) %>%
-  mutate(yMean = mean(fare))
+  Fare= c(54, 84, 90, 93, 111, 141, 162, 183, 207, 231, 291, 300, 309, 360, 360, 429, 477),
+  Distance= c(90, 179, 184, 190, 270, 393, 502, 578, 681, 818, 1102, 1138, 1204, 1448, 1463, 1813, 1828)
+) %>%
+  mutate(yMean = mean(Fare))
 
 
 bodyData <- data.frame(
@@ -32,11 +24,8 @@ bodyData <- data.frame(
              30.1, 25.7, 24.6, 27.1, 27.5),
   bodyfat = c(11.9, 22.8, 18.7, 20.1, 12.9, 21.7, 27.1, 25.4, 21.3, 19.3, 25.4, 27.2,
               11.7, 17.8, 12.8, 23.9, 22.6, 25.4, 14.8, 21.1)) %>%
-    mutate(fatMean = mean(bodyfat))
-  
+  mutate(fatMean = mean(bodyfat))
 
-
- 
 
 # Load additional dependencies and setup functions
 # source("global.R")
@@ -48,7 +37,7 @@ ui <- list(
     skin = "black",
     ### Create the app header ----
     dashboardHeader(
-      title = "Exploring R Squared", # You may use a shortened form of the title here
+      title = "Exploring R-squared", # You may use a shortened form of the title here
       titleWidth = 250,
       tags$li(class = "dropdown", actionLink("info", icon("info"))),
       tags$li(
@@ -69,8 +58,8 @@ ui <- list(
         id = "pages",
         menuItem("Overview", tabName = "overview", icon = icon("tachometer-alt")),
         menuItem("Prerequisites", tabName = "prerequisites", icon = icon("book")),
-        menuItem("Explore R Squared", tabName = "Explore1", icon = icon("wpexplorer")),
-        menuItem("Explore partial R Squared", tabName = "Explore2", icon = icon("wpexplorer")),
+        menuItem("Explore R-squared", tabName = "Explore1", icon = icon("wpexplorer")),
+        menuItem("Explore Partial R-squared", tabName = "Explore2", icon = icon("wpexplorer")),
         menuItem("References", tabName = "references", icon = icon("leanpub"))
       ),
       tags$div(
@@ -85,16 +74,17 @@ ui <- list(
         tabItem(
           tabName = "overview",
           withMathJax(),
-          h1("Exploring R Squared"), # This should be the full name.
-          p("R squared is a statistical measure of how close the data are to the
-            fitted regression line. This app allows you to explore it in simple 
-            linear regression model and multvariant model."),
+          h1("Exploring R-squared"), # This should be the full name.
+          p("R-squared is a statistical measure of how close the data are to the
+            fitted regression line. This app allows you to explore it in both a 
+            simple linear regression model and a multivariate model."),
           h2("Instructions"),
           br(),
           tags$ol(
-            tags$li("Click on the prerequisites button to review/learn the concepts
-                    of R squared value and partial R squared value."),
-            tags$li("click the go button to enter the prerequisite page.")
+            tags$li("Click on the Go button or the Prerequisites link in the
+                    left menu to review the concepts of R-squared and partial R-squared."),
+            tags$li("Click the Explore links to see how R-squared or Partial
+                    R-squared work in particular examples.")
             
           ),
           ##### Go Button--location will depend on your goals
@@ -114,65 +104,73 @@ ui <- list(
           h2("Acknowledgements"),
           p(
             "This version of the app was developed and coded by Junjie He. Special 
-            thanks to Pro. Neil for coding
-            help.",
-            br(),
-            
+            thanks to Professor Neil Hatfield for coding help.",
             br(),
             br(),
+            "Cite this app as:",
+            br(),
+            boastUtils::citeApp(),
             br(),
             br(),
-            div(class = "updated", "Last Update: 7/3/2022 by JJH.")
+            div(class = "updated", "Last Update: 9/30/2022 by JJH.")
           )
         ),
         #### Set up the Prerequisites Page ----
         tabItem(
           tabName = "prerequisites",
           withMathJax(),
-          h2("Concepts of R squared and Partial R squared"),
+          h2("Concepts of R-squared and Partial R-squared"),
           br(),
           box(
-            title = strong("What is the R squared value ?"),
+            title = strong("What is the R-squared value?"),
             status = "primary",
             collapsible = TRUE,
             collapsed = TRUE,
             width = '100%',
-            "R squared value, denoted as \\(r^2\\), is the regression sum of squares
-            divided by the total sum of squares. \\(r^2\\) = SSR/SST = 1 - SSE/SST. 
-            Because R squared value is a proportion, it should between 0 and 1.
+            "R-squared value, denoted as \\(R^2\\), is the regression sum of squares
+            divided by the total sum of squares. \\(R^2\\) = SSR/SST = 1 - SSE/SST. 
+            Because SSR ≤ SST, \\(R^2\\) will be between 0 and 1.
             If the value is equal to 1, it means that the model explains 
             all the variability of the response data around the mean. If 
             the value is equal to 0, it means that the model explains
-            none of the variability of the response data around its mean "
-            
+            none of the variability of the response data around its mean. "
           ),
           box(
-            title = strong("how to intepret R squared value ?"),
+            title = strong("How to interpret the R-squared value?"),
             status = "primary",
             collapsible = TRUE,
             collapsed = TRUE,
             width = '100%',
-            p("there are two ways to inteprate the \\(r^2\\)"),
+            p("ways to inteprate the \\(R^2\\)"),
             tags$ul(
-              tags$li("We can say \\(r^2\\) *100 percent of the variation in y is
-                      reduced by taking into account predictor x."),
-            tags$li("\\(r^2\\) *100 percent of the variation in y is explained by the
-                    variation in predictor x.")
+              tags$li("We can say that 100*\\(R^2\\) percent of the variation in
+                      \\(Y\\) is reduced by taking into account the predictor \\(X\\) 
+                      (or a set of predictors \\(X_1\\), \\(X_2\\),... \\(X_k\\))."),
+              tags$li("We can say 100*\\(R^2\\) percent of the variation in \\(Y\\) is
+                      explained by the variation in the predictor \\(X\\)  (or a set of
+                      predictors \\(X_1\\), \\(X_2\\),... \\(X_k\\)) ."),
+              tags$li("As the square of the correlation coefficient, \\(R^2\\) can also 
+                    be viewed as a measure of association between \\(X\\) and \\(Y\\)  
+                    (irrespective of calling one variable the predictor and the 
+                    other the response.")
             )
           ),
           box(
-            title = strong("What is the partial R squared ? How to inteprete it?"),
+            title = strong("What is the Partial R-squared ? How to inteprete it?"),
             status = "primary",
             collapsible = TRUE,
             collapsed = TRUE,
             width = '100%',
-            "partial R squared value also called the coefficient of partial determination.
-            In regression model, assuming that a full model will include all three
-            predictors (Y ~ X1, X2 X3), partial R squared helps to explain what
-            additional percent of variation can be explained by X2 and X3, given 
-            the reduced model only include X1. In general, partial R squared gives 
-            us the proportion of variation explained by X2 and X3 that cannot be 
-            explained by X1."
+            "Partial R-squared, also called the coefficient of partial determination, 
+            measures the part of the variation in the response that cannot be explained
+            by a reduced model  but can be explained by a full model. For example, 
+            we might consider a full regression model that will include three predictors
+            (\\(Y\\) ~ \\(X_1\\), \\(X_2\\), \\(X_3\\)), and a reduced model based 
+            on \\(X_1\\) alone.  In that case, the partial R-squared gives us the 
+            proportion of variation explained by all three predictors that cannot 
+            be explained by  \\(X_1\\) alone.  Partial R-squared helps to explain
+            what additional percent of variation can be explained by \\(X_2\\) 
+            and \\(X_3\\), given the reduced model that only includes \\(X_1\\)."
           )
         ),
         
@@ -180,10 +178,10 @@ ui <- list(
         #### Set up an Explore Page 1----
         tabItem(
           tabName = "Explore1",
-          h2("R squared"),
-          tags$ul(tags$li("Adjust the sliders to change the intercept (β0) and 
-                              coefficient (β1)."),
-                  tags$li("Exploring R squared by Flightfair and Distance data.")),
+          h2("R-squared"),
+          tags$ul("Explore R-squared by Flightfare and Distance 
+                  data. Also adjust the sliders below to change the intercept (β0) and 
+                  coefficient (β1)."),
           br(),
           fluidRow(
             column(
@@ -206,7 +204,7 @@ ui <- list(
                   inputId = "b1",
                   label = "coefficient/slope (β1):",
                   min = 0.14,
-                  max = 0.32,
+                  max = 0.28,
                   value = 0.14)
                 
               ),
@@ -238,79 +236,52 @@ ui <- list(
         #### Set up an Explore Page 2----
         tabItem(
           tabName = "Explore2",
-          h2("Partial R squared"),
-          tags$ul(tags$li("Use the dropdown menu to select the full model and the
-                          reduced model."),
-                  tags$li("Exploring Partial R squared by Bodyfat data.")),
+          h2("Partial R-squared"),
+          tags$ul("Explore the Partial R-squared value by using the drop-down menu
+                  below to select the reduced model and the full model from Bodyfat 
+                  dataset."),
           br(),
           fluidRow(
             column(
               width = 4,
               wellPanel(
                 h3("Data Info"),
-                p("This data contains 20 observations of bodyfat and related information
-                  about triceps, thigh and midarm."),
+                p("Bodyfat data contains 20 observations. Each observatioin includes
+                  measurements of bodyfat and corresponding measurements of triceps,
+                  thigh and midarm from the objects of study."),
                 br(),
-              selectInput(
-                inputId = 'fullMODEL',
-                label = 'Select a full model',
-                choices = list(
-                  'Triceps + Thigh + Midarm' = "triceps + thigh + midarm",
-                  'Triceps + Thigh' = "triceps + thigh",
-                  'Triceps + Midarm' = "triceps + midarm",
-                  'Thigh + Midarm' = "thigh + midarm"
+                selectInput(
+                  inputId = 'fullMODEL',
+                  label = 'Select a full model',
+                  choices = list(
+                    'Triceps + Thigh + Midarm' = "triceps + thigh + midarm",
+                    'Triceps + Thigh' = "triceps + thigh",
+                    'Triceps + Midarm' = "triceps + midarm",
+                    'Thigh + Midarm' = "thigh + midarm"
+                  ),
+                  selected = 'Triceps + Thigh + Midarm'
                 ),
-                selected = 'Triceps + Thigh + Midarm'
-              ),
-              selectInput(
-                inputId = 'reducedMODEL',
-                label = 'Select a reduced model',
-                choices = c("fill2")
-              ),
-              bsButton(
-                inputId = "newSAMPLE", 
-                label = "Simulate!", 
-                icon = icon("retweet"),
-                size = "large",
-                style = "default"
-              ),
+                selectInput(
+                  inputId = 'reducedMODEL',
+                  label = 'Select a reduced model',
+                  choices = c("fill2")
+                ),
+                bsButton(
+                  inputId = "newSAMPLE", 
+                  label = "Simulate!", 
+                  icon = icon("retweet"),
+                  size = "large",
+                  style = "default"
+                ),
               )
             ),
             column(
               width = 8,
-              h3("Illustraton:"),
-              tags$ul(tags$li("The plot below will show the relationship between 
-                              full model and reduced model."),
-                      tags$li("The red part represents the proportion of variation 
-                              explained by the reduced model."),
-                      tags$li("The green part shows the proportion of variation 
-                              that cannot be explained by the reduced model, but 
-                              can be explained by the full model (Partial R Squared). "),
-                      tags$li("The combination of red part and green part represents
-                              the proportion of variation explained by the full
-                              model.")
-               
-              ),
+              # h3("Illustraton:"),
               plotOutput(outputId = "partialPLOT"),
               tableOutput(outputId = "fill3"),
             ),
-            # checkboxInput(
-            #   inputId = "fillIN2",
-            #   label = "check to see the R squared value of two models",
-            #   value = FALSE,
-            #   width = "100%"
-            # ),
-            # tableOutput(outputId = "fill3")
-            
           ),
-          # checkboxInput(
-          #   inputId = "fillIN2",
-          #   label = "check to see the value of SSR of Full Model and SSR of Reduced
-          #   Model",
-          #   value = FALSE,
-          #   width = "100%"
-          # ),
-          # tableOutput(outputId = "fill3")
         ),
         #### Set up the References Page ----
         tabItem(
@@ -338,13 +309,13 @@ ui <- list(
             class = "hangingindent",
             "Chang, W., Cheng J., Allaire, J., Sievert, C., Schloerke, B., Xie, Y.,
             Allen, J., McPherson, J., Dipert, A., and Borges, B. (2021). shiny:
-            Web application framework for R. (v 1.7.1). [R package]. Available
-            from https://CRAN.R-project.org/package=shiny"
+            Web application framework for R. (v 1.7.1). [R package].
+            Available from https://CRAN.R-project.org/package=shiny"
           ),
           p(
             class = "hangingindent",
-            "Pennsylvania State University. (2018). STAT 462 Applied Regression Analysis. 
-            Available from https://online.stat.psu.edu/stat462/"
+            "Pardoe , Iain. 2012. Applied Regression Modeling Cover Applied Regression Modeling,
+            2nd Edition. Wiley."
           ),
           p(
             class = "hangingindent",
@@ -384,7 +355,7 @@ server <- function(input, output, session) {
     valueExpr = {
       baseData %>%
         mutate(
-          yHat = input$b0 + input$b1 * distance
+          yHat = input$b0 + input$b1 * Distance
         )
     }
   )
@@ -392,7 +363,7 @@ server <- function(input, output, session) {
   sst <- eventReactive(
     eventExpr = plotData(),
     valueExpr = {
-      sum((plotData()$fare - plotData()$yMean)^2)
+      sum((plotData()$Fare - plotData()$yMean)^2)
       
     }
   )
@@ -400,13 +371,14 @@ server <- function(input, output, session) {
   sse <- eventReactive(
     eventExpr = plotData(),
     valueExpr = {
-      sum((plotData()$fare - plotData()$yHat)^2)
+      sum((plotData()$Fare - plotData()$yHat)^2)
     }
   )
   
   ssr <- eventReactive(
     eventExpr = plotData(),
     valueExpr = {
+      # sum((plotData()$yHat - plotData()$yMean)^2)
       sst()-sse()
     }
   )
@@ -422,68 +394,35 @@ server <- function(input, output, session) {
     }
   )
   
-  
-  # sstMODEL <- eventReactive(
-  #   eventExpr = bodyData(),
-  #   valueExpr = {
-  #     sum((bodyData()$bodyfat - bodyData()$fatMean)^2)
-  #     
-  #   }
-  # )
-  # 
-  # ssrFULL <- eventReactive(
-  #   eventExpr = bodyData(),
-  #   valueExpr = {
-  #     sum((temp1 - bodyData()$fatMean)^2)
-  #     
-  #   }
-  # )
-  # 
-  # ssrREDUCED <- eventReactive(
-  #   eventExpr = bodyData(),
-  #   valueExpr = {
-  #     sum((temp2 - bodyData()$fatMean)^2)
-  #     
-  #   }
-  # )
-  
-  # sseFULL <- eventReactive(
-  #   eventExpr = bodyData(),
-  #   valueExpr = {
-  #     sum((bodyData()$bodyfat - temp1 ))
-  #   }
-  # )
-  # 
-  # sseREDUCED <- eventReactive(
-  #   eventExpr = bodyData(),
-  #   valueExpr = {
-  #     sum((bodyData()$bodyfat - temp2))
-  #   }
-  # )
-
-  
-  
   # below for the explore 1 page
-   ## SST plot ----
+  ## SST plot ----
   output$sstPLOT <- renderPlot(
     expr = {
       ggplot(
         data = plotData(),
-        mapping = aes(x=distance, y=fare))+
+        mapping = aes(x=Distance, y=Fare))+
         geom_point(na.rm = TRUE)+
-        geom_hline(aes(yintercept = mean(fare)), color="blue")+
+        geom_hline(aes(yintercept = mean(Fare)), color="blue")+
         geom_rect(
           mapping = aes(
-            ymin = fare,
+            ymin = Fare,
             ymax = yMean,
-            xmin = distance,
-            xmax = abs(fare-yMean) + distance,
+            xmin = Distance,
+            xmax = abs(Fare-yMean) + Distance,
           ),
-          alpha = .15,fill="blue",
+          alpha = .15,
+          fill= psuPalette[4],
+          col = psuPalette[4],
           na.rm = FALSE
         )+
-        scale_x_continuous(breaks = c(200, 400, 600,800,1000,1200,1400,1600,1800,2000))+
-        scale_y_continuous(breaks = c(200,400,600,800))+
+        scale_x_continuous(
+          limits = c(0, 2200),
+          breaks = seq.int(from = 0, to = 2200, by = 200)
+        )+
+        scale_y_continuous(
+          limits = c(0, 600),
+          breaks = seq.int(from = 0, to = 600, by = 200)
+        )+
         theme_bw()+
         ggtitle("Plot of SST") +
         theme(
@@ -502,25 +441,29 @@ server <- function(input, output, session) {
         expr = {
           ggplot(
             data = plotData(),
-            mapping = aes(x = distance, y = fare))+
+            mapping = aes(x = Distance, y = Fare))+
             geom_point(na.rm = TRUE)+
             geom_abline(intercept = input$b0,slope = input$b1)+
-            geom_hline(aes(yintercept = mean(fare)), color = "blue")+
+            geom_hline(aes(yintercept = mean(Fare)), color = "blue")+
             geom_rect(
               mapping = aes(
-                xmin = distance,
-                xmax = distance + (yHat - yMean),
+                xmin = Distance,
+                xmax = Distance + abs(yHat - yMean),
                 ymin = yMean,
                 ymax = yHat),
               na.rm = FALSE,
-              alpha = .15,
+              alpha = .2,
               fill = psuPalette[2],
-              color = psuPalette[2]
+              col = psuPalette[2],
             )+
-            scale_x_continuous(limits = c(200, 2200),
-                               breaks = seq.int(from = 200, to = 2200, by = 200))+
+            scale_x_continuous(
+              limits = c(0, 2200),
+              breaks = seq.int(from = 0, to = 2200, by = 200),
+            )+
             scale_y_continuous(
-                               breaks = seq.int(from = 200, to = 600, by = 200))+
+              limits = c(0, 600),
+              breaks = seq.int(from = 0, to = 600, by = 200)
+            )+
             theme_bw()+
             ggtitle("Plot of SSR") +
             theme(
@@ -529,10 +472,7 @@ server <- function(input, output, session) {
         },
         alt = "fill this later"
       )
-      
-      
-      
-    }   
+    }
   )
   
   
@@ -544,25 +484,27 @@ server <- function(input, output, session) {
         expr = {
           ggplot(
             data = plotData(),
-            mapping = aes(x = distance, y = fare))+
+            mapping = aes(x = Distance, y = Fare))+
             geom_point(na.rm = TRUE)+
             geom_abline(intercept = input$b0,slope = input$b1)+
-            geom_hline(aes(yintercept = mean(fare)), color = "blue")+
+            geom_hline(aes(yintercept = mean(Fare)), color = "blue")+
             geom_rect(
               mapping = aes(
-                xmin = distance,
-                xmax = distance + (yHat - fare),
-                ymin = fare,
+                xmin = Distance,
+                xmax = Distance + abs(yHat - Fare),
+                ymin = Fare,
                 ymax = yHat),
               na.rm = FALSE,
-              alpha = .15, 
+              alpha = .25,
               fill = psuPalette[3],
+              col = psuPalette[3],
             )+
             scale_x_continuous(
-              limits = c(200, 2200),
-              breaks = seq.int(from = 200, to = 2200, by = 200))+
+              limits = c(0, 2200),
+              breaks = seq.int(from = 0, to = 2200, by = 200))+
             scale_y_continuous(
-              breaks = seq.int(from = 200, to = 600, by = 200))+
+              limits = c(0, 600),
+              breaks = seq.int(from = 0, to = 600, by = 200))+
             theme_bw()+
             ggtitle("Plot of SSE") +
             theme(
@@ -571,13 +513,10 @@ server <- function(input, output, session) {
         },
         alt = "fill this later"
       )
-      
-      
-      
-    }   
+    }
   )
   
-  ## barplot of R squared----
+  ## bar plot of R-squared----
   observeEvent(
     eventExpr = plotData(),
     handlerExpr = {
@@ -620,22 +559,20 @@ server <- function(input, output, session) {
               fill = psuPalette[3],
               alpha = 0.15
             ) +
-            ggtitle("BarPlot of R-sq") +
+            ggtitle("Bar plot of R-squared") +
             theme(
               text = element_text(size = 18)
             )+
-          # geom_rect(
-          #   mapping = aes(xmin = 0, xmax = r, ymin = r, ymax = 1),
-          #   fill = psuPalette[3],
-          #   alpha = 0.15
-          # ) +
-          annotate(
-            geom = "text",
-            x = r/2,
-            y = 0.125,
-            label = paste("R-sq =", round(r^2, digits = 3)),
-            size = 5
-          )
+            annotate(
+              geom = "text",
+              x = r/2,
+              y = -0.1,
+              label = paste("R-squared =", round(r^2, digits = 3)),
+              size = 8
+            ) + 
+            scale_y_continuous(
+              expand = expansion(mult = 0, add = c(0.15, 0))
+            )
         },
       )
     }
@@ -646,7 +583,7 @@ server <- function(input, output, session) {
   output$fittedLine <- renderText({
     if (input$fittedRegression){
       paste(" fare =",
-            48.971770,"+", "(", 0.219687 ,")", "* distance")
+            48.97,"+", "(", 0.22 ,")", "* distance")
     }})
   
   
@@ -660,68 +597,45 @@ server <- function(input, output, session) {
     }})
   
   
-  
   # below for the explore 2 page
   ## update the model selection ----
   observeEvent(input$fullMODEL, {
-  if (input$fullMODEL == "triceps + thigh + midarm") {
-    updateSelectInput(
-      session = session,
-      inputId = "reducedMODEL",
-      choices = list('Triceps + Thigh' = "triceps + thigh", 
-                     'Triceps + Midarm' = "triceps + midarm", 
-                     'Thigh + Midarm' = "thigh + midarm", 
-                     'Triceps' = "triceps",
-                     'Thigh' = "thigh", 'Midarm' = "midarm" )
-    )
-  } else if (input$fullMODEL == "triceps + thigh") {
-    updateSelectInput(
-      session = session,
-      inputId = "reducedMODEL",
-      choices = list('Triceps' = "triceps",
-                     'Thigh' = "thigh")
-    )
-  } else if (input$fullMODEL == "triceps + midarm") {
-    updateSelectInput(
-      session = session,
-      inputId = "reducedMODEL",
-      choices = list('Triceps' = "triceps",
-                     'Midarm' = "midarm")
-    )
-  } else if (input$fullMODEL == "thigh + midarm") {
-    updateSelectInput(
-      session = session,
-      inputId = "reducedMODEL",
-      choices = list('Thigh' = "thigh", 
-                     'Midarm' = "midarm")
-    )
-  }
+    if (input$fullMODEL == "triceps + thigh + midarm") {
+      updateSelectInput(
+        session = session,
+        inputId = "reducedMODEL",
+        choices = list('Triceps + Thigh' = "triceps + thigh", 
+                       'Triceps + Midarm' = "triceps + midarm", 
+                       'Thigh + Midarm' = "thigh + midarm", 
+                       'Triceps' = "triceps",
+                       'Thigh' = "thigh", 'Midarm' = "midarm" )
+      )
+    } else if (input$fullMODEL == "triceps + thigh") {
+      updateSelectInput(
+        session = session,
+        inputId = "reducedMODEL",
+        choices = list('Triceps' = "triceps",
+                       'Thigh' = "thigh")
+      )
+    } else if (input$fullMODEL == "triceps + midarm") {
+      updateSelectInput(
+        session = session,
+        inputId = "reducedMODEL",
+        choices = list('Triceps' = "triceps",
+                       'Midarm' = "midarm")
+      )
+    } else if (input$fullMODEL == "thigh + midarm") {
+      updateSelectInput(
+        session = session,
+        inputId = "reducedMODEL",
+        choices = list('Thigh' = "thigh", 
+                       'Midarm' = "midarm")
+      )
+    }
   })
   
-  # observeEvent(
-  #   eventExpr = input$fullMODEL,
-  #   handlerExpr = {
-  #     print(input$fullMODEL)
-  #     temp1 <- lm(
-  #       formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
-  #       data = bodyData)
-  #     print(summary(temp1))
-  #   }
-  # )
-  # 
-  # observeEvent(
-  #   eventExpr = input$reducedMODEL,
-  #   handlerExpr = {
-  #     print(input$reducedMODEL)
-  #     temp2 <- lm(
-  #       formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
-  #       data = bodyData)
-  #     print(summary(temp2))
-  #   },
-  #   ignoreInit = TRUE
-  # )
-
-  ##plot in partial R squared part----
+  
+  ##plot in partial R-squared part----
   observeEvent(
     eventExpr = input$newSAMPLE,
     handlerExpr = {
@@ -787,7 +701,7 @@ server <- function(input, output, session) {
               color = "blue",
               fill = NA
             ) +
-            ggtitle("plot of partial R squared") +
+            ggtitle("plot of partial R-squared") +
             theme_void() +
             theme(
               text = element_text(size = 18),
@@ -800,7 +714,7 @@ server <- function(input, output, session) {
     ignoreNULL = TRUE,
     ignoreInit = FALSE
   )
-
+  
   ##fill in sentence in explore page 2----
   
   observeEvent(
@@ -816,17 +730,29 @@ server <- function(input, output, session) {
       r2 <- summary(temp2)$r.squared # rsq2 of the reduced model
       output$fill3 <- renderText({
         if (input$newSAMPLE){
-          paste("R squared value of reduced model =",
-                round(r2, digits = 3),
-                ", R squared value of full model =",  round(r1, digits = 3), 
-                "." )
+          paste( tags$ul(tags$li("The plot below will show the relationship between 
+                                the full model and the reduced model in terms of R-squared."),
+                         tags$li("The red square represents the proportion of variation 
+                              explained by the reduced model. The area can be denoted
+                              as R-squared value of the reduced model, which is equal
+                              to =",round(r2, digits = 3),"."),
+                         tags$li("The green square represents the proportion of variation 
+                               explained by the full model. The area of green squared
+                              can be denoted as R-squared value of the full model, which
+                              is equal to =", round(r1, digits = 3),"."),
+                         tags$li("The difference between two squares represents the 
+                              variation cannot be explained by the reduced model but can be
+                              explained by the full model. The area of difference can be
+                              denoted as Partial R-squared.")
+                         
+          )
+          )
         }})
     },
     ignoreNULL = TRUE,
     ignoreInit = FALSE
   )
   
-
   
   ## Set Go Button ----
   observeEvent(
@@ -842,8 +768,6 @@ server <- function(input, output, session) {
   )
   
   
-  
-  
   ## Set up Info button ----
   observeEvent(
     eventExpr = input$info,
@@ -856,9 +780,6 @@ server <- function(input, output, session) {
       )
     }
   )
-  
-  
-  
 }
 # Boast App Call ----
 boastUtils::boastApp(ui = ui, server = server)
