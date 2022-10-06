@@ -582,8 +582,8 @@ server <- function(input, output, session) {
   ## regression line----
   output$fittedLine <- renderText({
     if (input$fittedRegression){
-      paste(" fare =",
-            48.97,"+", "(", 0.22 ,")", "* distance")
+      paste(" Fare =",
+            48.97,"+", "(", 0.22 ,")", "* Distance")
     }})
   
   
@@ -593,7 +593,7 @@ server <- function(input, output, session) {
       paste("According to the model, SST =",prettyNum(sst(),big.mark = ","),
             ", SSR =", prettyNum(max(0,ssr()),big.mark = ","), 
             ", and SSE =", prettyNum(sse(),big.mark = ","), ". Can you notice 
-            the r quared value? Can you interpret it? ")
+            the R-squared value? Can you interpret it? ")
     }})
   
   
