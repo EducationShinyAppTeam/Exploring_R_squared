@@ -246,9 +246,10 @@ ui <- list(
               width = 4,
               wellPanel(
                 h3("Data Info"),
-                p("Bodyfat data contains 20 observations. Each observatioin includes
-                  measurements of bodyfat and corresponding measurements of triceps,
-                  thigh and midarm from the objects of study."),
+                p("The BodyFat dataset used here is a portion of the data for a study of the realtion
+                  of amount of body fat to several predictor variables which includes triceps
+                  thickness, thigh circumference, and midarm circumference. There are in total of 20
+                  persons' data included in the dataset."),
                 br(),
                 selectInput(
                   inputId = 'fullMODEL',
@@ -314,8 +315,8 @@ ui <- list(
           ),
           p(
             class = "hangingindent",
-            "Pardoe , Iain. 2012. Applied Regression Modeling Cover Applied Regression Modeling,
-            2nd Edition. Wiley."
+            "Kutner, Michael H., Christopher J. Nachtsheim, John Neter, and William Li. 
+            2005. Applied Linear Statistical Models. Boston: McGraw-Hill Irwin. "
           ),
           p(
             class = "hangingindent",
@@ -730,17 +731,20 @@ server <- function(input, output, session) {
       r2 <- summary(temp2)$r.squared # rsq2 of the reduced model
       output$fill3 <- renderText({
         if (input$newSAMPLE){
-          paste( tags$ul(tags$li("The plot below will show the relationship between 
-                                the full model and the reduced model in terms of R-squared."),
+          paste( tags$ul(tags$li("The plot above shows the relationship between 
+                                the full model and the reduced model in terms of R-squared.
+                                The blue square represents the proportion of variation
+                                has been 100% explained."),
                          tags$li("The red square represents the proportion of variation 
-                              explained by the reduced model. The area can be denoted
+                              explained by the reduced model. The area of red square can be denoted
                               as R-squared value of the reduced model, which is equal
-                              to =",round(r2, digits = 3),"."),
-                         tags$li("The green square represents the proportion of variation 
-                               explained by the full model. The area of green squared
+                              to ",round(r2, digits = 3),"."),
+                         tags$li("The green square which is over red square represents 
+                                 the proportion of variation explained by the full model. 
+                                 The area of green squared
                               can be denoted as R-squared value of the full model, which
-                              is equal to =", round(r1, digits = 3),"."),
-                         tags$li("The difference between two squares represents the 
+                              is equal to ", round(r1, digits = 3),"."),
+                         tags$li("The difference between areas of two squares represents the 
                               variation cannot be explained by the reduced model but can be
                               explained by the full model. The area of difference can be
                               denoted as Partial R-squared.")
