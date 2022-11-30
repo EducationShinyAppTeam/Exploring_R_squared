@@ -310,12 +310,6 @@ ui <- list(
             column(
               width = 4,
               wellPanel(
-                # h3("Data Info"),
-                # p("The BodyFat dataset used here is a portion of the data for a study of the realtion
-                #   of amount of body fat to several predictor variables which includes triceps
-                #   thickness, thigh circumference, and midarm circumference. There are in total of 20
-                #   persons' data included in the dataset."),
-                # br(),
                 selectInput(
                   inputId = 'fullMODEL',
                   label = 'Select a full model',
@@ -536,7 +530,6 @@ server <- function(input, output, session) {
               breaks = seq.int(from = 0, to = 600, by = 200)
             )+
             theme_bw()+
-            # ggtitle("Plot of SSR") +
             labs(
               title = "Plot of SSR",
               x = "Distance (miles)",
@@ -788,7 +781,6 @@ server <- function(input, output, session) {
               text = element_text(size = 18),
               legend.position = "bottom"
             ) 
-
         },
         alt = "FILL IN"
       )
