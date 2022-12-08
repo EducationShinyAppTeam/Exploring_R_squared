@@ -9,27 +9,26 @@ library(dplyr)
 
 # Load data----
 baseData <- data.frame(
-  Fare= c(54, 84, 90, 93, 111, 141, 162, 183, 207, 231, 291, 300, 309, 360, 360, 429, 477),
-  Distance= c(90, 179, 184, 190, 270, 393, 502, 578, 681, 818, 1102, 1138, 1204, 1448, 1463, 1813, 1828)
+  Fare = c(54, 84, 90, 93, 111, 141, 162, 183, 207, 231, 291, 300, 309, 360,
+           360, 429, 477),
+  Distance= c(90, 179, 184, 190, 270, 393, 502, 578, 681, 818, 1102, 1138, 
+              1204, 1448, 1463, 1813, 1828)
 ) %>%
   mutate(yMean = mean(Fare))
-
 
 bodyData <- data.frame(
   triceps = c(19.5, 24.7, 30.7, 29.8, 19.1, 25.6, 31.4, 27.9,22.1, 25.5, 31.1, 30.4,
               18.7, 19.7, 14.6, 29.5, 27.7, 30.2, 22.7, 25.2),
-  thigh = c(43.1, 49.8, 51.9, 54.3, 42.2, 53.9, 58.5, 52.1, 49.9, 53.5, 56.6, 56.7, 46.5, 44.2,
-            42.7, 54.4, 55.3, 58.6, 48.2, 51),
-  midarm = c(29.1, 28.2, 37, 31.1, 30.9, 23.7, 27.6, 30.6, 23.2, 24.8, 30, 28.3, 23, 28.6, 21.3,
-             30.1, 25.7, 24.6, 27.1, 27.5),
+  thigh = c(43.1, 49.8, 51.9, 54.3, 42.2, 53.9, 58.5, 52.1, 49.9, 53.5, 56.6,
+            56.7, 46.5, 44.2, 42.7, 54.4, 55.3, 58.6, 48.2, 51),
+  midarm = c(29.1, 28.2, 37, 31.1, 30.9, 23.7, 27.6, 30.6, 23.2, 24.8, 30, 28.3,
+             23, 28.6, 21.3, 30.1, 25.7, 24.6, 27.1, 27.5),
   bodyfat = c(11.9, 22.8, 18.7, 20.1, 12.9, 21.7, 27.1, 25.4, 21.3, 19.3, 25.4, 27.2,
               11.7, 17.8, 12.8, 23.9, 22.6, 25.4, 14.8, 21.1)) %>%
   mutate(fatMean = mean(bodyfat))
 
-
 # Load additional dependencies and setup functions
 # source("global.R")
-
 # Define UI for App ----
 ui <- list(
   ## Create the app page ----
@@ -128,15 +127,17 @@ ui <- list(
             collapsed = TRUE,
             width = '100%',
             tags$ul(
-              tags$li(strong("SST"), "is called the total sum of squares and quantifies how much
-                    the observed data poins vary around the mean."
+              tags$li(strong("SST"), "is called the total sum of squares and quantifies
+                      how much the observed data poins vary around the mean."
               ),
-              tags$li(strong("SSR"), "is called the regression sum of squares and quantifies how far the 
-            estimated regression line is from the mean."
+              tags$li(strong("SSR"), "is called the regression sum of squares and 
+                      quantifies how far the estimated regression line is from the mean."
               ),
-            tags$li(strong("SSE"),"is called the error sum of squares and quantifies how much the 
-                    observated data points vary around the estimated regression line."),
-            )),
+            tags$li(strong("SSE"),"is called the error sum of squares and quantifies 
+                    how much the observated data points vary around the estimated 
+                    regression line."),
+            )
+          ),
           box(
             title = strong("What is the R-squared value?"),
             status = "primary",
@@ -189,8 +190,6 @@ ui <- list(
             and \\(X_3\\), given the reduced model that only includes \\(X_1\\)."
           )
         ),
-        
-        
         #### Set up an Explore Page 1----
         tabItem(
           tabName = "Explore1",
@@ -214,10 +213,6 @@ ui <- list(
             column(
               width = 4,
               wellPanel(
-                # h3("Data Info"),
-                # p("This data contains 17 observations of flightfare and related
-                #       flight distance. Using the slider to adjust intercept and 
-                #       coefficient to see the changes."),
                 br(),
                 sliderInput(
                   inputId = "b0",
@@ -243,43 +238,33 @@ ui <- list(
                 ),
                 tableOutput(outputId = "fittedLine"),
               ),
-              # checkboxInput(
-              #   inputId = "fittedRegression",
-              #   label = "Show the fitted regression line",
-              #   value = FALSE,
-              #   width = "100%"
-              # ),
-              # tableOutput(outputId = "fittedLine"),
             ),
             column(
               width = 8,
-              plotOutput(outputId = "sstPLOT"),
-              # plotOutput(outputId = "ssrPLOT"),
-              # plotOutput(outputId = "ssePLOT"),
-              # plotOutput(outputId = "squarePLOT",height = "100px"),
+              plotOutput(outputId = "sstPlot"),
             )
           ),
           br(),
           fluidRow(
             column(
               width = 6,
-              plotOutput(outputId = "ssrPLOT"),
+              plotOutput(outputId = "ssrPlot"),
             ),
             column(
               width = 6,
-              plotOutput(outputId = "ssePLOT"),
+              plotOutput(outputId = "ssePlot"),
             )
           ),
           br(),
           fluidRow(
             column(
               width = 12,
-              plotOutput(outputId = "squarePLOT",height = "100px"),
+              plotOutput(outputId = "squarePlot",height = "100px"),
             )
           ),
           br(),
           checkboxInput(
-            inputId = "fillIN1",
+            inputId = "fillIn1",
             label = "check to see the value of SST and SSR",
             value = FALSE,
             width = "100%"
@@ -300,10 +285,11 @@ ui <- list(
             collapsible = TRUE,
             collapsed = TRUE,
             width = '100%',
-            "The BodyFat dataset used here is a portion of the data for a study of the realtion
-                  of amount of body fat to several predictor variables which includes triceps
-                  thickness, thigh circumference, and midarm circumference. There are in total of 20
-                  persons' data included in the dataset."
+            "The BodyFat dataset used here is a portion of the data for a study 
+            of the realtion of amount of body fat to several predictor variables
+            which includes triceps thickness, thigh circumference, and midarm 
+            circumference. There are in total of 20 persons' data included in the 
+            dataset."
           ),
           br(),
           fluidRow(
@@ -311,7 +297,7 @@ ui <- list(
               width = 4,
               wellPanel(
                 selectInput(
-                  inputId = 'fullMODEL',
+                  inputId = 'fullModel',
                   label = 'Select a full model',
                   choices = list(
                     'Triceps + Thigh + Midarm' = "triceps + thigh + midarm",
@@ -322,7 +308,7 @@ ui <- list(
                   selected = 'Triceps + Thigh + Midarm'
                 ),
                 selectInput(
-                  inputId = 'reducedMODEL',
+                  inputId = 'reducedModel',
                   label = 'Select a reduced model',
                   choices = c("triceps + thigh + midarm")
                 ),
@@ -337,8 +323,7 @@ ui <- list(
             ),
             column(
               width = 8,
-              # h3("Illustraton:"),
-              plotOutput(outputId = "partialPLOT"),
+              plotOutput(outputId = "partialPlot"),
               tableOutput(outputId = "fill3"),
             ),
           ),
@@ -405,8 +390,6 @@ ui <- list(
   )
 )
 
-
-
 # Define server logic ----
 server <- function(input, output, session) {
   
@@ -424,7 +407,6 @@ server <- function(input, output, session) {
     eventExpr = plotData(),
     valueExpr = {
       sum((plotData()$Fare - plotData()$yMean)^2)
-      
     }
   )
   
@@ -444,7 +426,7 @@ server <- function(input, output, session) {
   )
   
   dataCollection <- eventReactive(
-    eventExpr =  c(input$fullMODEL,input$reducedMODEL),
+    eventExpr =  c(input$fullModel,input$reducedModel),
     valueExpr = {
       switch(
         EXPR = input$selectData,
@@ -456,7 +438,7 @@ server <- function(input, output, session) {
   
   # below for the explore 1 page
   ## SST plot ----
-  output$sstPLOT <- renderPlot(
+  output$sstPlot <- renderPlot(
     expr = {
       ggplot(
         data = plotData(),
@@ -496,12 +478,11 @@ server <- function(input, output, session) {
     alt = "fill this later"
   )
   
-  
   ## SSR plot----
   observeEvent(
     eventExpr = plotData(),
     handlerExpr = {
-      output$ssrPLOT <- renderPlot(
+      output$ssrPlot <- renderPlot(
         expr = {
           ggplot(
             data = plotData(),
@@ -544,12 +525,11 @@ server <- function(input, output, session) {
     }
   )
   
-  
   ## SSE plot----
   observeEvent(
     eventExpr = plotData(),
     handlerExpr = {
-      output$ssePLOT <- renderPlot(
+      output$ssePlot <- renderPlot(
         expr = {
           ggplot(
             data = plotData(),
@@ -594,7 +574,7 @@ server <- function(input, output, session) {
     eventExpr = plotData(),
     handlerExpr = {
       r = sqrt(ssr()/sst())
-      output$squarePLOT <- renderPlot(
+      output$squarePlot <- renderPlot(
         expr = {
           ggplot(
             data = plotData(),
@@ -647,6 +627,7 @@ server <- function(input, output, session) {
               expand = expansion(mult = 0, add = c(0.15, 0))
             )
         },
+        alt = "fill this later"
       )
     }
   )
@@ -657,76 +638,80 @@ server <- function(input, output, session) {
     if (input$fittedRegression){
       paste(" Fare =",
             48.97,"+", "(", 0.22 ,")", "* Distance")
-    }})
-  
+    }
+  }
+  )
   
   ## fill in sentence in explore page 1 ----
   output$fill1 <- renderText({
-    if (input$fillIN1){
+    if (input$fillIn1){
       paste("According to the model, SST =",prettyNum(sst(),big.mark = ","),
             ", SSR =", prettyNum(max(0,ssr()),big.mark = ","), 
             ", and SSE =", prettyNum(sse(),big.mark = ","), ". Can you notice 
             the R-squared value? Can you interpret it? ")
-    }})
+    }
+  }
+  )
   
   
   # below for the explore 2 page
   ## update the model selection ----
-  observeEvent(input$fullMODEL, {
-    if (input$fullMODEL == "triceps + thigh + midarm") {
+  observeEvent(input$fullModel, {
+    if (input$fullModel == "triceps + thigh + midarm") {
       updateSelectInput(
         session = session,
-        inputId = "reducedMODEL",
+        inputId = "reducedModel",
         choices = list('Triceps + Thigh' = "triceps + thigh", 
                        'Triceps + Midarm' = "triceps + midarm", 
                        'Thigh + Midarm' = "thigh + midarm", 
                        'Triceps' = "triceps",
                        'Thigh' = "thigh", 'Midarm' = "midarm" )
       )
-    } else if (input$fullMODEL == "triceps + thigh") {
+    } else if (input$fullModel == "triceps + thigh") {
       updateSelectInput(
         session = session,
-        inputId = "reducedMODEL",
+        inputId = "reducedModel",
         choices = list('Triceps' = "triceps",
                        'Thigh' = "thigh")
       )
-    } else if (input$fullMODEL == "triceps + midarm") {
+    } else if (input$fullModel == "triceps + midarm") {
       updateSelectInput(
         session = session,
-        inputId = "reducedMODEL",
+        inputId = "reducedModel",
         choices = list('Triceps' = "triceps",
                        'Midarm' = "midarm")
       )
-    } else if (input$fullMODEL == "thigh + midarm") {
+    } else if (input$fullModel == "thigh + midarm") {
       updateSelectInput(
         session = session,
-        inputId = "reducedMODEL",
+        inputId = "reducedModel",
         choices = list('Thigh' = "thigh", 
                        'Midarm' = "midarm")
       )
     }
-  })
-
+  }
+  )
+  
   
   ##plot in partial R-squared part----
   observeEvent(
     eventExpr = input$newSample,
     handlerExpr = {
       temp1 <- lm(
-        formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
+        formula = as.formula(paste("bodyfat",input$fullModel,sep = " ~ " )),
         data = bodyData)
       temp2 <- lm(
-        formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
+        formula = as.formula(paste("bodyfat",input$reducedModel,sep = " ~ " )),
         data = bodyData)
       r1 <- summary(temp1)$r.squared # rsq1 of the full model
       r2 <- summary(temp2)$r.squared # rsq2 of the reduced model
-      output$partialPLOT <- renderPlot(
+      output$partialPlot <- renderPlot(
         expr = {
           validate(
             need(
               expr = input[["newSample"]][1] > 0,
-              message = "Each time click on the Compare! button to see the new visualization
-              of Partial R-squared after choosing new models."
+              message = "Each time click on the Compare! button to see the new 
+              visualization of Partial R-squared after choosing new models."
             )
           )
           ggplot(
@@ -790,41 +775,37 @@ server <- function(input, output, session) {
   )
   
   ##fill in sentence in explore page 2----
-  
   observeEvent(
     eventExpr = input$newSample,
     handlerExpr = {
       temp1 <- lm(
-        formula = as.formula(paste("bodyfat",input$fullMODEL,sep = " ~ " )),
+        formula = as.formula(paste("bodyfat",input$fullModel,sep = " ~ " )),
         data = bodyData)
       temp2 <- lm(
-        formula = as.formula(paste("bodyfat",input$reducedMODEL,sep = " ~ " )),
+        formula = as.formula(paste("bodyfat",input$reducedModel,sep = " ~ " )),
         data = bodyData)
       r1 <- summary(temp1)$r.squared # rsq1 of the full model
       r2 <- summary(temp2)$r.squared # rsq2 of the reduced model
       output$fill3 <- renderText({
         if (input$newSample){
           paste( "The visualization above shows the relationship between 
-                                the full model and the reduced model in terms of R-squared.
-                                The blue edge square represents all possible variations
-                                has been explained.",
-                 "The red square represents the proportion of variation 
-                              explained by the reduced model. The area of red square can be denoted
-                              as R-squared value of the reduced model, which is equal
-                              to ",strong(round(r2, digits = 3),"."),
-                 "The green square which is over red square represents 
-                                 the proportion of variation explained by the full model. 
-                                 The area of green squared
-                              can be denoted as R-squared value of the full model, which
-                              is equal to ", strong(round(r1, digits = 3),"."),
-                 "The difference between areas of two squares represents the 
-                              variation cannot be explained by the reduced model but can be
-                              explained by the full model. The area of difference can be
-                              denoted as Partial R-squared."
-                 
-                 
+                  the full model and the reduced model in terms of R-squared.
+                  The blue edge square represents all possible variations
+                  has been explained.", "The red square represents the proportion
+                  of variation explained by the reduced model. The area of red 
+                  square can be denoted as R-squared value of the reduced model,
+                  which is equal to ",strong(round(r2, digits = 3),"."), "The green 
+                  square which is over red square represents the proportion of 
+                  variation explained by the full model. The area of green squared
+                  can be denoted as R-squared value of the full model, which
+                  is equal to ", strong(round(r1, digits = 3),"."), "The difference 
+                  between areas of two squares represents the variation cannot be 
+                 explained by the reduced model but can be explained by the full 
+                 model. The area of difference can be denoted as Partial R-squared."
           )
-        }})
+        }
+      }
+      )
     },
     ignoreNULL = TRUE,
     ignoreInit = FALSE
