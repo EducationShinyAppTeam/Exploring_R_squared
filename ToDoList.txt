@@ -1,0 +1,7 @@
+# Things Needed for This Version
+1.
+
+
+# Ideas for Future Development
++ There are different types of R squared, probably
+in somewhere discuss them. 
