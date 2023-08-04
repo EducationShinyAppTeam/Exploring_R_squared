@@ -1,10 +1,7 @@
 # Things Needed for This Version
-1.In First explore page,When page narrow down 
-to a certain size, the Numbers on the axis will 
-over each other.
+1.
 
 
 # Ideas for Future Development
-1: fix the layout problem.
-2: There are different types of R squared, probably
++ There are different types of R squared, probably
 in somewhere discuss them. 
